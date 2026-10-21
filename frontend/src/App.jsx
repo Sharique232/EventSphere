@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-import Login from "./pages/Login";
+import Login from "./pages/login.jsx";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword";
