@@ -38,7 +38,7 @@ function Analytics() {
                 setError("");
 
                 const response = await axios.get(
-                    "http://localhost:5000/api/expos",
+                    "api/expos",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ function Analytics() {
                 setError("");
 
                 const response = await axios.get(
-                    `http://localhost:5000/api/analytics/expo/${selectedExpo}`,
+                    `api/analytics/expo/${selectedExpo}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

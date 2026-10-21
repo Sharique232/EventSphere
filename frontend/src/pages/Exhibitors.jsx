@@ -38,7 +38,7 @@ function Exhibitors() {
                 const token = localStorage.getItem("token");
 
                 const expoResponse = await axios.get(
-                    "http://localhost:5000/api/expos",
+                    "api/expos",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ function Exhibitors() {
                 for (const expo of expos) {
                     try {
                         const response = await axios.get(
-                            `http://localhost:5000/api/exhibitors/expo/${expo._id}`,
+                            `api/exhibitors/expo/${expo._id}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${token}`,

@@ -44,7 +44,7 @@ function ExhibitorDetails() {
                 const token = localStorage.getItem("token");
 
                 const response = await axios.get(
-                    `http://localhost:5000/api/exhibitors/${id}`,
+                    `api/exhibitors/${id}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

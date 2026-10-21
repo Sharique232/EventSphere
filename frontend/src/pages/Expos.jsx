@@ -39,7 +39,7 @@ function Expos() {
                 const token = localStorage.getItem("token");
 
                 const response = await axios.get(
-                    "http://localhost:5000/api/expos",
+                    "api/expos",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

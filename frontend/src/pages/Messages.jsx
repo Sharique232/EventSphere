@@ -103,7 +103,7 @@ function Messages() {
                 setError("");
 
                 const response = await axios.get(
-                    `http://localhost:5000/api/messages/conversation/${currentUserId}/${receiverId}`,
+                    `api/messages/conversation/${currentUserId}/${receiverId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -137,7 +137,7 @@ function Messages() {
     useEffect(() => {
         if (!currentUserId) return;
 
-        const socket = io("http://localhost:5000");
+        const socket = io("");
 
         socket.on("connect", () => {
             socket.emit("joinRoom", currentUserId);
@@ -202,7 +202,7 @@ function Messages() {
             setError("");
 
             const response = await axios.post(
-                "http://localhost:5000/api/messages",
+                "api/messages",
                 {
                     sender: currentUserId,
                     receiver: receiverId,

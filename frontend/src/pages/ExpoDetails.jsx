@@ -43,7 +43,7 @@ function ExpoDetails() {
                 const token = localStorage.getItem("token");
 
                 const response = await axios.get(
-                    `http://localhost:5000/api/expos/${id}`,
+                    `api/expos/${id}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -75,7 +75,7 @@ function ExpoDetails() {
             const token = localStorage.getItem("token");
 
             await axios.post(
-                "http://localhost:5000/api/registrations",
+                "api/registrations",
                 {
                     expo: id,
                     registrationType: "expo",

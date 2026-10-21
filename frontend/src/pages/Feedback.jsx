@@ -45,7 +45,7 @@ function Feedback() {
             }
 
             const response = await axios.get(
-                `http://localhost:5000/api/feedback/user/${currentUserId}`
+                `api/feedback/user/${currentUserId}`
             );
 
             setFeedbacks(response.data.feedbacks || []);
@@ -87,7 +87,7 @@ function Feedback() {
             setLoading(true);
 
             await axios.post(
-                "http://localhost:5000/api/feedback",
+                "api/feedback",
                 {
                     user: currentUserId,
                     expo: currentExpoId,

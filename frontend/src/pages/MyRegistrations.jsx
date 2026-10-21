@@ -51,7 +51,7 @@ function MyRegistrations() {
                 }
 
                 const response = await axios.get(
-                    `http://localhost:5000/api/registrations/user/${userId}`,
+                    `api/registrations/user/${userId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`

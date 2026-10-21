@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const API = "http://localhost:5000/api/staff";
-const EXHIBITORS_API = "http://localhost:5000/api/exhibitors";
+const API = "api/staff";
+const EXHIBITORS_API = "api/exhibitors";
 
 const EMPTY_FORM = {
     exhibitor: "",

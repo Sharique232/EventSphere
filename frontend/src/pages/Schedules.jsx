@@ -87,7 +87,7 @@ function Schedules() {
             setError("");
 
             const response = await axios.get(
-                "http://localhost:5000/api/schedules",
+                "api/schedules",
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -112,7 +112,7 @@ function Schedules() {
     const loadExpos = async () => {
         try {
             const response = await axios.get(
-                "http://localhost:5000/api/expos",
+                "api/expos",
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -230,7 +230,7 @@ function Schedules() {
 
             if (editingSchedule) {
                 response = await axios.put(
-                    `http://localhost:5000/api/schedules/${editingSchedule._id}`,
+                    `api/schedules/${editingSchedule._id}`,
                     scheduleData,
                     {
                         headers: {
@@ -241,7 +241,7 @@ function Schedules() {
                 );
             } else {
                 response = await axios.post(
-                    "http://localhost:5000/api/schedules",
+                    "api/schedules",
                     scheduleData,
                     {
                         headers: {
@@ -288,7 +288,7 @@ function Schedules() {
 
         try {
             await axios.delete(
-                `http://localhost:5000/api/schedules/${id}`,
+                `api/schedules/${id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }

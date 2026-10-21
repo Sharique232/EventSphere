@@ -64,7 +64,7 @@ function Sessions() {
                 setError("");
 
                 const response = await axios.get(
-                    "http://localhost:5000/api/sessions",
+                    "api/sessions",
                     {
                         headers: {
                             Authorization: `Bearer ${token()}`
@@ -106,7 +106,7 @@ function Sessions() {
                 if (!userId) return;
 
                 const response = await axios.get(
-                    `http://localhost:5000/api/bookmarks/user/${userId}`,
+                    `api/bookmarks/user/${userId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token()}`
@@ -157,7 +157,7 @@ function Sessions() {
             }
 
             await axios.post(
-                "http://localhost:5000/api/registrations",
+                "api/registrations",
                 {
                     expo: expoId,
                     session: session._id,
@@ -240,7 +240,7 @@ function Sessions() {
 
             if (existingBookmark) {
                 await axios.delete(
-                    `http://localhost:5000/api/bookmarks/${existingBookmark._id}`,
+                    `api/bookmarks/${existingBookmark._id}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token()}`
@@ -264,7 +264,7 @@ function Sessions() {
             }
 
             const response = await axios.post(
-                "http://localhost:5000/api/bookmarks",
+                "api/bookmarks",
                 {
                     user: userId,
                     expo: expoId,
@@ -285,7 +285,7 @@ function Sessions() {
             } else {
                 // Reload from server if the API uses another response shape.
                 const refreshed = await axios.get(
-                    `http://localhost:5000/api/bookmarks/user/${userId}`,
+                    `api/bookmarks/user/${userId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token()}`

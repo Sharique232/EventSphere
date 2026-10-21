@@ -78,7 +78,7 @@ function Bookmarks() {
             setError("");
 
             const response = await axios.get(
-                `http://localhost:5000/api/bookmarks/user/${userId}`,
+                `api/bookmarks/user/${userId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -118,7 +118,7 @@ function Bookmarks() {
             setSuccess("");
 
             const response = await axios.delete(
-                `http://localhost:5000/api/bookmarks/${id}`,
+                `api/bookmarks/${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
