@@ -2,10 +2,19 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const http = require("http");
+const path = require("path");
+const dns = require("node:dns");
 const { Server } = require("socket.io");
 
-require("dotenv").config();
+// Fix DNS resolution for MongoDB Atlas
+dns.setServers(["8.8.8.8"]);
 
+// Load environment variables from backend/.env
+require("dotenv").config({
+    path: path.join(__dirname, ".env")
+});
+
+// Import routes
 const userRoutes = require("./routes/userRoutes");
 const expoRoutes = require("./routes/expoRoutes");
 const boothRoutes = require("./routes/boothRoutes");
@@ -23,39 +32,57 @@ const staffRoutes = require("./routes/staffRoutes");
 
 const app = express();
 
-// =========================
-// CREATE HTTP SERVER
-// =========================
-
-const server = http.createServer(app);
-
-
-// =========================
-// SOCKET.IO
-// =========================
-
-const io = new Server(server, {
-    cors: {
-        origin: "*"
-    }
-});
-
-// Make Socket.IO available to controllers
-app.set("io", io);
-
-
-// =========================
-// MIDDLEWARE
-// =========================
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Reuse MongoDB connection
+let mongoConnectionPromise;
 
-// =========================
-// API ROUTES
-// =========================
+function connectDB() {
+    if (mongoose.connection.readyState === 1) {
+        return Promise.resolve();
+    }
 
+    if (!process.env.MONGO_URI) {
+        return Promise.reject(
+            new Error("MONGO_URI is not configured. Check backend/.env")
+        );
+    }
+
+    if (!mongoConnectionPromise) {
+        mongoConnectionPromise = mongoose
+            .connect(process.env.MONGO_URI, {
+                serverSelectionTimeoutMS: 10000
+            })
+            .then(() => {
+                console.log("MongoDB Connected Successfully");
+            })
+            .catch((error) => {
+                mongoConnectionPromise = null;
+                console.error("MongoDB Connection Failed:", error.message);
+                throw error;
+            });
+    }
+
+    return mongoConnectionPromise;
+}
+
+// Connect to database before handling requests
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        console.error("Database initialization failed:", error.message);
+
+        res.status(503).json({
+            message: "Database connection failed. Check server configuration."
+        });
+    }
+});
+
+// API routes
 app.use("/api/users", userRoutes);
 app.use("/api/expos", expoRoutes);
 app.use("/api/booths", boothRoutes);
@@ -71,111 +98,66 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/staff", staffRoutes);
 
-
-// =========================
-// HOME
-// =========================
-
+// Home route
 app.get("/", (req, res) => {
     res.send("EventSphere API is running");
 });
 
+// Local HTTP server and Socket.IO
+const server = http.createServer(app);
 
-// =========================
-// SOCKET.IO CONNECTION
-// =========================
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    }
+});
 
+app.set("io", io);
+
+// Socket.IO events for local development
 io.on("connection", (socket) => {
-
     console.log("User connected:", socket.id);
 
-
-    // =========================
-    // JOIN PERSONAL ROOM
-    // =========================
-
     socket.on("joinRoom", (userId) => {
-
-        socket.join(userId);
-
-        console.log(
-            `User ${userId} joined room`
-        );
-
+        if (userId) {
+            socket.join(String(userId));
+            console.log(`User ${userId} joined room`);
+        }
     });
 
-
-    // =========================
-    // REAL-TIME NOTIFICATION
-    // =========================
-
     socket.on("sendNotification", (data) => {
+        if (!data || !data.userId) return;
 
-        const {
-            userId,
+        const { userId, title, message, type } = data;
+
+        io.to(String(userId)).emit("receiveNotification", {
             title,
             message,
             type
-        } = data;
-
-        io.to(userId).emit(
-            "receiveNotification",
-            {
-                title,
-                message,
-                type
-            }
-        );
-
+        });
     });
-
-
-    // =========================
-    // USER DISCONNECTED
-    // =========================
 
     socket.on("disconnect", () => {
-
-        console.log(
-            "User disconnected:",
-            socket.id
-        );
-
+        console.log("User disconnected:", socket.id);
     });
-
 });
 
+// Export Express app for deployment
+module.exports = app;
 
-// =========================
-// MONGODB CONNECTION
-// =========================
+// Start local server
+if (require.main === module) {
+    const PORT = process.env.PORT || 5000;
 
-mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-
-        console.log(
-            "MongoDB Connected Successfully"
-        );
-
-        // Start server
-        server.listen(
-            process.env.PORT,
-            () => {
-
-                console.log(
-                    `Server running on port ${process.env.PORT}`
-                );
-
-            }
-        );
-
-    })
-    .catch((error) => {
-
-        console.log(
-            "MongoDB Connection Failed:",
-            error.message
-        );
-
-    });
+    connectDB()
+        .then(() => {
+            server.listen(PORT, () => {
+                console.log(`Server running on port ${PORT}`);
+            });
+        })
+        .catch((error) => {
+            console.error("Could not start server:", error.message);
+            process.exit(1);
+        });
+}
